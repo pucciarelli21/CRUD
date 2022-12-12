@@ -84,3 +84,58 @@ document.getElementById("btnPost").addEventListener("click", async () => {
             })
     }
 })
+
+//Modify users
+
+document.getElementById("btnPut").addEventListener("click", async () => {
+    let users = await fetchJson(url)
+    let id = document.getElementById("inputPutId").value;
+    let user = users.findIndex(user => user.id == id)
+    if (user >= 0) {
+        $('#dataModal').modal('show');
+        document.getElementById("inputPutNombre").setAttribute("value", users[user].nombre)
+        document.getElementById("inputPutApellido").setAttribute("value", users[user].apellido)
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Algo salio mal!',
+            html: 'El registro ' + id + ' no Existe.',
+            timer: 2000,
+            timerProgressBar: true,
+        })
+    }
+})
+
+document.getElementById("btnSendChanges").addEventListener("click", async () => {
+    let id = document.getElementById("inputPutId").value;
+    let newNombre = document.getElementById("inputPutNombre").value
+    let newApellido = document.getElementById("inputPutApellido").value
+    fetch(url + "/" + id, {
+        method: "PUT",
+        body: JSON.stringify({
+            nombre: newNombre,
+            apellido: newApellido
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        }
+    })
+        .then(async function () {
+            let users = await fetchJson(url);
+            pantalla.innerHTML = ""
+            users.forEach(user => {
+                pantalla.innerHTML +=
+                    `
+                <li>ID: ${user.id}</li>
+                <li>Nombre: ${user.nombre}</li>
+                <li>Apellido: ${user.apellido}</li>
+            `
+            });
+            Swal.fire({
+                icon: 'success',
+                title: 'Registro modificado con exito',
+                showConfirmButton: true,
+                confirmButtonText: 'Confirmar'
+            })
+        })
+})
