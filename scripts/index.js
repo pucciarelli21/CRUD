@@ -139,3 +139,41 @@ document.getElementById("btnSendChanges").addEventListener("click", async () => 
             })
         })
 })
+
+//Delete users
+document.getElementById("btnDelete").addEventListener("click", async () => {
+    let users = await fetchJson(url);
+    let id = document.getElementById("inputDelete").value;
+    let user = users.findIndex(user => user.id == id)
+    if (id != "" && user >= 0) {
+        fetch(url + "/" + id, {
+            method: "DELETE",
+        })
+            .then(async function () {
+                let userList = await fetchJson(url);
+                pantalla.innerHTML = ""
+                userList.forEach(user => {
+                    pantalla.innerHTML +=
+                        `
+                    <li>ID: ${user.id}</li>
+                    <li>Nombre: ${user.nombre}</li>
+                    <li>Apellido: ${user.apellido}</li>
+                `
+                });
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Registro eliminado con exito',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Confirmar'
+                })
+            })
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Algo salio mal!',
+            html: 'El registro ' + id + ' no Existe.',
+            timer: 2000,
+            timerProgressBar: true,
+        })
+    }
+})
