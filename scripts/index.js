@@ -43,3 +43,44 @@ document.getElementById("btnGet1").addEventListener("click", async () => {
         })
     }
 })
+
+//Add new user
+document.getElementById("btnPost").addEventListener("click", async () => {
+    let users = await fetchJson(url);
+    let newNombre = document.getElementById("inputPostNombre").value;
+    let newApellido = document.getElementById("inputPostApellido").value;
+    if (newNombre != "" || newApellido != "") {
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({
+                id: users.id,
+                nombre: newNombre,
+                apellido: newApellido,
+            }),
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            }
+        })
+            .then(async function () {
+                pantalla.innerHTML = ""
+                let users = await fetchJson(url);
+                users.forEach(user => {
+                    pantalla.innerHTML +=
+                        `
+                    <li>ID: ${user.id}</li>
+                    <li>Nombre: ${user.nombre}</li>
+                    <li>Apellido: ${user.apellido}</li>
+                `
+                });
+                document.getElementById("inputPostNombre").value = ""
+                document.getElementById("inputPostApellido").value = ""
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Registro guardado con exito',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Confirmar'
+                })
+                
+            })
+    }
+})
